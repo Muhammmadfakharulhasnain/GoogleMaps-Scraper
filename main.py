@@ -143,7 +143,7 @@ def main():
 
             previously_counted = 0
             while True:
-                page.mouse.wheel(0, 10000)
+                page.mouse.wheel(0, 50)
                 page.wait_for_timeout(3000)
 
                 if (
