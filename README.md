@@ -124,6 +124,3 @@ Edit the `main.py` query and run from terminal.
 ✔️ Clean frontend with Bootstrap styling
 ✔️ Supports both CLI & Flask modes
 
----
-
-Would you like me to **write it in a way that GitHub shows screenshots/demo GIFs** too (so people instantly see how it looks), or keep it text-only for now?
