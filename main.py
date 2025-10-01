@@ -89,42 +89,9 @@ def extract_coordinates_from_url(url: str) -> tuple[float, float]:
     # return latitude, longitude
     return float(coordinates.split(',')[0]), float(coordinates.split(',')[1])
 
-
-def main():
-    # read search from arguments
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-s", "--search", type=str)
-    parser.add_argument("-t", "--total", type=int)
-    args = parser.parse_args()
-    
-    if args.search:
-        search_list = [args.search]
-        
-    if args.total:
-        total = args.total
-    else:
-        # if no total is passed, we set the value to random big number
-        total = 1_000_000
-
-    if not args.search:
-        search_list = []
-        # read search from input.txt file
-        input_file_name = 'input.txt'
-        # Get the absolute path of the file in the current working directory
-        input_file_path = os.path.join(os.getcwd(), input_file_name)
-        # Check if the file exists
-        if os.path.exists(input_file_path):
-        # Open the file in read mode
-            with open(input_file_path, 'r') as file:
-            # Read all lines into a list
-                search_list = file.readlines()
-                
-        if len(search_list) == 0:
-            print('Error occured: You must either pass the -s search argument, or add searches to input.txt')
-            sys.exit()
-    
+def get_businesses(search_list: list, total: int, headless: bool = False):
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=headless)
         page = browser.new_page(locale="en-GB")
 
         page.goto("https://www.google.com/maps", timeout=20000)
@@ -238,10 +205,50 @@ def main():
                     print(f'Error occurred: {e}', end='\r')
             
             # output
-            business_list.save_to_excel(f"{search_for}".replace(' ', '_'))
-            business_list.save_to_csv(f"{search_for}".replace(' ', '_'))
+            filename = f"{search_for}".replace(' ', '_')
+            business_list.save_to_excel(filename)
+            business_list.save_to_csv(filename)
 
         browser.close()
+
+def scrape(search: str, total: int):
+    """Function for UI to scrape a single search."""
+    get_businesses([search], total, headless=True)
+
+def main():
+    # read search from arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-s", "--search", type=str)
+    parser.add_argument("-t", "--total", type=int)
+    args = parser.parse_args()
+    
+    if args.search:
+        search_list = [args.search]
+        
+    if args.total:
+        total = args.total
+    else:
+        # if no total is passed, we set the value to random big number
+        total = 1_000_000
+
+    if not args.search:
+        search_list = []
+        # read search from input.txt file
+        input_file_name = 'input.txt'
+        # Get the absolute path of the file in the current working directory
+        input_file_path = os.path.join(os.getcwd(), input_file_name)
+        # Check if the file exists
+        if os.path.exists(input_file_path):
+        # Open the file in read mode
+            with open(input_file_path, 'r') as file:
+            # Read all lines into a list
+                search_list = file.readlines()
+                
+        if len(search_list) == 0:
+            print('Error occured: You must either pass the -s search argument, or add searches to input.txt')
+            sys.exit()
+    
+    get_businesses(search_list, total, headless=False)
 
 if __name__ == "__main__":
     try:
