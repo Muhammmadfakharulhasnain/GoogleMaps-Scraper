@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Google Maps Scraper</h1>
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+    <form method="POST">
+        <label for="search">Search Query (e.g., "restaurants in New York"):</label><br>
+        <input type="text" id="search" name="search" value="{{ request.args.get('search', '') }}" required><br><br>
+        
+        <label for="total">Total Results to Scrape (positive number):</label><br>
+        <input type="number" id="total" name="total" min="1" value="100" required><br><br>
+        
+        <button type="submit">Scrape and Save</button>
+    </form>
+{% endblock %}
